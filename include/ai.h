@@ -32,10 +32,10 @@ SDL_Point Dequeue(Queue* q);
 
 unsigned int Hash(SDL_Point point);
 HashTable *CreateHashTable();
+int CheckAndAddToHashTable(HashTable *htable, SDL_Point point);
 void FreeHashTable(HashTable *htable);
 
 int distance_btw_points(SDL_Point a, SDL_Point b);
-Node *GetPath(Queue *que);
 Node *ReversePath(Node *path);
 void PrintPath(Node *base);
 Node *BSF(Game *game, Player *player);

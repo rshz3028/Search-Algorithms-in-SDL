@@ -116,23 +116,15 @@ HashTable *CreateHashTable()
     return htable;
 }
 
-SDL_Point *CheckHashTable(HashTable *htable, SDL_Point *array)
-{   
-    for(int i=0;i<8;i++)
-    {
-        unsigned int index = Hash(array[i]);
-        if(htable->table[index].x == -1 && htable->table[index].y == -1)
-        {
-            htable->table[index] = array[i];
-            //printf("HashTable[%d]= (%d,%d)\n",index, htable->table[index].x,htable->table[index].y );
-        }
-        else{
-            array[i].x = -1;
-            array[i].y = -1;
-        }
+int CheckAndAddToHashTable(HashTable *htable, SDL_Point point) {
+    unsigned int index = Hash(point);
+    if (htable->table[index].x == -1 && htable->table[index].y == -1) {
+        htable->table[index] = point;
+        return 1; // Successfully added
     }
-    return array;
+    return 0; // Already exists
 }
+
 void FreeHashTable(HashTable *htable)
 {
     if(htable==NULL) return;
@@ -166,40 +158,16 @@ Node *ReversePath(Node *path)
     return NULL;
 }
 
-Node *GetPath(Queue *que) 
-{
-    Node *current = que->first; // Start from the target
-    Node *path = NULL;
-
-    while (current) {
-        Node *new_node = malloc(sizeof(Node));
-        if (!new_node) {
-            printf("Memory allocation failed\n");
-            return NULL;
-        }
-        new_node->data = current->data;
-        new_node->parent = path;  // Link new node to the growing path
-        path = new_node;          // Move path pointer
-        current = current->parent;
-    }
-
-    return path;
-}
-
-void PrintPath(Node *base)
-{
-    if (base == NULL)
+void PrintPath(Node *path) {
+    if(path ==NULL)
     {
-        printf("Cannot build path, returned node is NULL\n");
+        printf("Cannot print path, node is null\n");
         return;
     }
-
-    Node *start = base; // Mark the starting point
-    do
-    {
-        printf("Node: (%d,%d)\n", base->data.x, base->data.y);
-        base = base->parent;
-    } while (base != NULL && base != start); // Stop if it's not circular or loops back
+    while (path) {
+        printf("Node: (%d,%d)\n", path->data.x, path->data.y);
+        path = path->parent;
+    }
 }
 
 
@@ -217,7 +185,7 @@ Node *BSF(Game *game, Player *player)
     SDL_Point target = player->target;
     printf("Target: (%d,%d)\n",target.x,target.y);
     printf("Base: (%d,%d)\n",base.x,base.y);
-    int max_iteration = 100;
+    int max_iteration = 10000;
     int iteration = 0;
 
     Queue *que = CreateQueue();
@@ -230,26 +198,24 @@ Node *BSF(Game *game, Player *player)
         iteration++;
 
         SDL_Point *adj = FindAdjacent(que->first->data);
-        CheckHashTable(htable, adj);
-        printf("current base: (%d,%d)\n",que->first->data.x, que->first->data.y);
-        for(int i=0;i<8;i++)
-        {   
-            if(adj[i].x != -1 && adj[i].y != -1)
-            { 
-                printf("new queue element: (%d,%d)\n",adj[i].x,adj[i].y);
+        for (int i = 0; i < 8; i++) {
+            if (CheckAndAddToHashTable(htable, adj[i])) {
                 Node *node = Enqueue(que, adj[i], que->first);
-                if(adj[i].x == target.x && adj[i].y == target.y)
-                {
+                printf("New Queue Element: (%d,%d)\n",node->data.x,node->data.y);
+                if (adj[i].x == target.x && adj[i].y == target.y) {
+                    printf("Found Target!!\n");
                     free(adj);
                     FreeQueue(que);
                     FreeHashTable(htable);
-                    //node = ReversePath(node);
                     return node;
-                };
+                }
             }
-            
-        }free(adj);
+        }
+        free(adj);
         Dequeue(que);
+
     }
+    FreeQueue(que);
+    FreeHashTable(htable);
     return NULL;
 }

@@ -69,7 +69,8 @@ void runGameLoop(Game *game, Player *player)
                         left_mouse.y = p->y;
                         free(p);
                         Node *path = BSF(game, player);
-                        PrintPath(path);
+                        //PrintPath(path);
+                        printf("target aquired: %d,%d\n",path->data.x,path->data.y);
                     }
             }
         }
