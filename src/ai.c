@@ -159,20 +159,45 @@ Node *ReversePath(Node *path)
 }
 
 void PrintPath(Node *path) {
-    if(path ==NULL)
-    {
+    if (path == NULL) {
         printf("Cannot print path, node is null\n");
         return;
     }
-    while (path) {
-        printf("Node: (%d,%d)\n", path->data.x, path->data.y);
-        path = path->parent;
+
+    // Count the number of nodes in the path
+    int count = 0;
+    Node *current = path;
+    while (current) {
+        count++;
+        current = current->parent;
     }
+
+    // Store nodes in an array
+    SDL_Point *pathArray = malloc(sizeof(SDL_Point) * count);
+    if (pathArray == NULL) {
+        printf("Memory allocation failed for path array\n");
+        return;
+    }
+
+    current = path;
+    for (int i = count - 1; i >= 0; i--) {
+        pathArray[i] = current->data;
+        current = current->parent;
+    }
+
+    // Print the path in forward order
+    printf("Path from base to target:\n");
+    for (int i = 0; i < count; i++) {
+        printf("Node: (%d,%d)\n", pathArray[i].x, pathArray[i].y);
+    }
+
+    free(pathArray);
 }
 
 
 
-Node *BSF(Game *game, Player *player)
+
+Queue *BSF(Game *game, Player *player)
 {
     /*get player position  
     get target position 
@@ -202,17 +227,21 @@ Node *BSF(Game *game, Player *player)
             if (CheckAndAddToHashTable(htable, adj[i])) {
                 Node *node = Enqueue(que, adj[i], que->first);
                 printf("New Queue Element: (%d,%d)\n",node->data.x,node->data.y);
-                if (adj[i].x == target.x && adj[i].y == target.y) {
-                    printf("Found Target!!\n");
+                if (adj[i].x == target.x && adj[i].y == target.y) 
+                {
                     free(adj);
-                    FreeQueue(que);
                     FreeHashTable(htable);
-                    return node;
+                    return que;
                 }
             }
         }
         free(adj);
         Dequeue(que);
+        if(iteration>=max_iteration)
+        {
+            printf("Exceeded Max Iteration Count\n");
+            break;
+        }
 
     }
     FreeQueue(que);

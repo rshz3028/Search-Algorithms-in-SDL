@@ -29,6 +29,7 @@ typedef struct HashTable
 Queue *CreateQueue();
 Node *Enqueue(Queue *q, SDL_Point a, Node *parent);
 SDL_Point Dequeue(Queue* q);
+void FreeQueue(Queue *que);
 
 unsigned int Hash(SDL_Point point);
 HashTable *CreateHashTable();
@@ -38,7 +39,7 @@ void FreeHashTable(HashTable *htable);
 int distance_btw_points(SDL_Point a, SDL_Point b);
 Node *ReversePath(Node *path);
 void PrintPath(Node *base);
-Node *BSF(Game *game, Player *player);
+Queue *BSF(Game *game, Player *player);
 
 
 #endif

@@ -68,9 +68,13 @@ void runGameLoop(Game *game, Player *player)
                         left_mouse.x = p->x;
                         left_mouse.y = p->y;
                         free(p);
-                        Node *path = BSF(game, player);
-                        //PrintPath(path);
-                        printf("target aquired: %d,%d\n",path->data.x,path->data.y);
+                        Queue *que = BSF(game, player);
+                        if(que != NULL )
+                        {
+                            printf("target aquired: %d,%d\n",que->last->data.x,que->last->data.y);
+                            //PrintPath(que->last);
+                            FreeQueue(que);
+                        }
                     }
             }
         }
