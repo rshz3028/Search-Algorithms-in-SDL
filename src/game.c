@@ -71,10 +71,10 @@ void runGameLoop(Game *game, Player *player)
                         Queue *que = BSF(game, player);
                         if(que != NULL )
                         {
-                            printf("target aquired: %d,%d\n",que->last->data.x,que->last->data.y);
+                            //printf("target aquired: %d,%d\n",que->last->data.x,que->last->data.y);
                             //PrintPath(que->last);
                             FreeQueue(que);
-                        }
+                        }else printf("NULL Queue\n");
                     }
             }
         }

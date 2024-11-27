@@ -5,7 +5,7 @@ typedef struct Game Game;
 typedef struct Player Player;
 typedef struct Node Node;
 
-#define SIZE (1980*1080)
+#define SIZE (1920*1080)
 
 typedef struct Node
 {

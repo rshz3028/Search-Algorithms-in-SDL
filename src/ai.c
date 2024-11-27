@@ -118,12 +118,30 @@ HashTable *CreateHashTable()
 
 int CheckAndAddToHashTable(HashTable *htable, SDL_Point point) {
     unsigned int index = Hash(point);
-    if (htable->table[index].x == -1 && htable->table[index].y == -1) {
-        htable->table[index] = point;
-        return 1; // Successfully added
+    unsigned int original_index = index; 
+    int attempt = 0;
+
+    while (htable->table[index].x != -1 || htable->table[index].y != -1) {
+        if (htable->table[index].x == point.x && htable->table[index].y == point.y) {
+            return 0;
+        }
+
+        // Linear probing
+        index = (index + 1) % htable->size;
+
+        if (index == original_index) {
+            printf("Hash table is full, cannot add point (%d, %d)\n", point.x, point.y);
+            return -1; 
+        }
+
+        attempt++;
     }
-    return 0; // Already exists
+
+    
+    htable->table[index] = point;
+    return 1;
 }
+
 
 void FreeHashTable(HashTable *htable)
 {
@@ -210,36 +228,50 @@ Queue *BSF(Game *game, Player *player)
     SDL_Point target = player->target;
     printf("Target: (%d,%d)\n",target.x,target.y);
     printf("Base: (%d,%d)\n",base.x,base.y);
-    int max_iteration = 10000;
+    int max_iteration = SIZE;
     int iteration = 0;
 
     Queue *que = CreateQueue();
     HashTable *htable = CreateHashTable();
     
     Enqueue(que, base,NULL);
-
+    CheckAndAddToHashTable(htable, base);
     while(que->last != NULL && iteration<max_iteration)
     {    
         iteration++;
 
         SDL_Point *adj = FindAdjacent(que->first->data);
-        for (int i = 0; i < 8; i++) {
-            if (CheckAndAddToHashTable(htable, adj[i])) {
-                Node *node = Enqueue(que, adj[i], que->first);
-                printf("New Queue Element: (%d,%d)\n",node->data.x,node->data.y);
+        for (int i = 0; i < 8; i++) 
+        {
+            if (CheckAndAddToHashTable(htable, adj[i])) 
+            {
+                Enqueue(que, adj[i], que->first);
+                //printf("New Queue Element: (%d,%d)\n",node->data.x,node->data.y);
                 if (adj[i].x == target.x && adj[i].y == target.y) 
                 {
+                    printf("Found target at: (%d,%d)\n",adj[i].x,adj[i].y);
                     free(adj);
                     FreeHashTable(htable);
                     return que;
                 }
             }
+            if (CheckAndAddToHashTable(htable, adj[i]) == -1)
+            {
+                FreeQueue(que);
+                FreeHashTable(htable);
+                return NULL;
+                break;
+            }
         }
         free(adj);
+        //printf("(%d,%d)\n",que->first->data.x,que->first->data.y);
         Dequeue(que);
         if(iteration>=max_iteration)
         {
             printf("Exceeded Max Iteration Count\n");
+            FreeQueue(que);
+            FreeHashTable(htable);
+            return NULL;
             break;
         }
 
