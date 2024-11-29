@@ -68,13 +68,13 @@ void runGameLoop(Game *game, Player *player)
                         left_mouse.x = p->x;
                         left_mouse.y = p->y;
                         free(p);
-                        Queue *que = BSF(game, player);
+                        Queue *que = BFS(game, player);
                         if(que != NULL )
                         {
                             //printf("target aquired: %d,%d\n",que->last->data.x,que->last->data.y);
                             //PrintPath(que->last);
                             FreeQueue(que);
-                        }else printf("NULL Queue\n");
+                        }else printf("returned NULL Queue\n");
                     }
             }
         }

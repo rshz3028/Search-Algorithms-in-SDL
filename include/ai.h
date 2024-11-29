@@ -7,6 +7,7 @@ typedef struct Node Node;
 
 #define SIZE (1920*1080)
 
+
 typedef struct Node
 {
     SDL_Point data;
@@ -37,9 +38,8 @@ int CheckAndAddToHashTable(HashTable *htable, SDL_Point point);
 void FreeHashTable(HashTable *htable);
 
 int distance_btw_points(SDL_Point a, SDL_Point b);
-Node *ReversePath(Node *path);
 void PrintPath(Node *base);
-Queue *BSF(Game *game, Player *player);
+Queue *BFS(Game *game, Player *player);
 
 
 #endif

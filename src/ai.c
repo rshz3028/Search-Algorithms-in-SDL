@@ -162,60 +162,25 @@ SDL_Point *FindAdjacent(SDL_Point base)
     return return_array;
 }
 
-Node *ReversePath(Node *path)
-{
-    if(path == NULL)
-    {
-        printf("cannot reverse path, returned node is NULL\n");
-        return NULL;
-    }
-    while (path!=NULL)
-    {
-        
-    }
-    return NULL;
-}
-
 void PrintPath(Node *path) {
     if (path == NULL) {
         printf("Cannot print path, node is null\n");
         return;
     }
 
-    // Count the number of nodes in the path
-    int count = 0;
+    printf("Path from base to target:\n");
     Node *current = path;
     while (current) {
-        count++;
+        printf("Node: (%d,%d)\n", current->data.x, current->data.y);
         current = current->parent;
     }
-
-    // Store nodes in an array
-    SDL_Point *pathArray = malloc(sizeof(SDL_Point) * count);
-    if (pathArray == NULL) {
-        printf("Memory allocation failed for path array\n");
-        return;
-    }
-
-    current = path;
-    for (int i = count - 1; i >= 0; i--) {
-        pathArray[i] = current->data;
-        current = current->parent;
-    }
-
-    // Print the path in forward order
-    printf("Path from base to target:\n");
-    for (int i = 0; i < count; i++) {
-        printf("Node: (%d,%d)\n", pathArray[i].x, pathArray[i].y);
-    }
-
-    free(pathArray);
 }
 
 
 
 
-Queue *BSF(Game *game, Player *player)
+
+Queue *BFS(Game *game, Player *player)
 {
     /*get player position  
     get target position 
@@ -246,7 +211,7 @@ Queue *BSF(Game *game, Player *player)
             if (CheckAndAddToHashTable(htable, adj[i])) 
             {
                 Enqueue(que, adj[i], que->first);
-                //printf("New Queue Element: (%d,%d)\n",node->data.x,node->data.y);
+                printf("New Queue Element: (%d,%d)\n",adj[i].x,adj[i].y);
                 if (adj[i].x == target.x && adj[i].y == target.y) 
                 {
                     printf("Found target at: (%d,%d)\n",adj[i].x,adj[i].y);
